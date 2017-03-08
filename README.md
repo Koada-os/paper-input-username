@@ -23,7 +23,7 @@ Example:
 
 ```html
 <paper-input-username id="validInput" minlength="3" min-error-message="Your username must be longer." label="Valid Username" allowed-pattern="[a-zA-Z0-9]"></paper-input-username>
-<paper-input-username id="failInput" label="Conflict Username" allowed-pattern="[a-zA-Z]"></paper-input-username>
+<paper-input-username id="failInput" label="Conflict Username" allowed-pattern="[a-zA-Z]" style="height:10px;"></paper-input-username>
 <script>
 var validInput = document.getElementById('validInput');
 var failInput = document.getElementById('failInput')
