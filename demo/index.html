@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>paper-input-username demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../paper-input-username.html">
+
+    <style is="custom-style" include="demo-pages-shared-styles">
+
+    </style>
+</head>
+
+<body>
+    <div class="vertical-section-container centered">
+        <h3>paper-input-username demo</h3>
+        <demo-snippet>
+            <template>
+          <paper-input-username id="validInput" minlength="3" min-error-message="Your username must be longer." label="Valid Username" allowed-pattern="[a-zA-Z0-9]"></paper-input-username>
+          <paper-input-username id="failInput" label="Conflict Username" allowed-pattern="[a-zA-Z]"></paper-input-username>
+        </template>
+        </template>
+        </demo-snippet>
+    </div>
+    <script>
+        document.addEventListener('WebComponentsReady', function() {
+            var validInput = document.getElementById('validInput');
+            var failInput = document.getElementById('failInput')
+            var customFailInput = document.getElementById('customFailInput')
+            validInput.addEventListener('usernameChanged', function(e,w) {
+              console.log(e,w);
+                validInput.usernameValid();
+            });
+            failInput.addEventListener('usernameChanged', function() {
+                failInput.usernameInvalid('The username already exists');
+            });
+        });
+    </script>
+</body>
+
+</html>

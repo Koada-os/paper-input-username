@@ -1,0 +1,227 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-spinner/paper-spinner.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+
+<!--
+Material design: [Text fields](https://www.google.com/design/spec/components/text-fields.html)
+
+`<paper-input-username>` is a single-line text field with Material Design styling alowing you to make server-side check to verify if the username is valid.
+
+    <paper-input-username label="Username"></paper-input-username>
+
+### Usage
+
+When the user has finished writing his username, the username-changed event is called after the time specified with `time-before-username-check` (def: 2000ms).
+
+After doing some server side check, you have to call `usernameValid()` or `usernameInvalid(message)`.
+
+@demo demo/index.html
+-->
+
+
+<dom-module id="paper-input-username">
+    <template>
+    <style>
+         :host {
+            display: block;
+        }
+          paper-spinner{
+          --paper-spinner-stroke-width: 2px;
+        }
+
+        iron-icon[active] {
+            animation: fadein 0.3s linear forwards;
+        }
+
+        iron-icon:not([active]) {
+            animation: fadeout 0.3s linear forwards;
+        }
+
+        @keyframes fadein {
+          0% { opacity: 0; }
+          100% { opacity: 1; }
+        }
+
+        @keyframes fadeout {
+          0% { opacity: 1;}
+          100% { opacity: 0;}
+        }
+    </style>
+    <paper-input
+          id="inputPaper"
+          on-value-changed="_usernameChanged"
+          invalid="{{invalid}}"
+          disabled$="[[disabled]]"
+          autofocus="[[autofocus]]"
+          label="[[label]]"
+          value="{{value}}"
+          required$="[[required]]"
+          error-message="[[errorMessage]]"
+          allowed-pattern="[[allowedPattern]]"
+          minlength$="[[minlength]]"
+          maxlength$="[[maxlength]]">
+            <div suffix style="line-height:0px;margin-right:6px;">
+              <paper-spinner hidden id="spinner" style="vertical-align:middle;width:19px;height:19px;margin-bottom:3px;"></paper-spinner>
+              <iron-icon hidden id="okIcon" style="height:23px;width:23px;color:#4CAF50;" icon="done"></iron-icon>
+              <iron-icon hidden id="failIcon" style="height:23px;width:23px;color:#F44336;" icon="clear"></iron-icon>
+            </div>
+    </paper-input>
+  </template>
+</dom-module>
+<script>
+    Polymer({
+
+        is: 'paper-input-username',
+
+        /**
+         * Fired when the user has finished writing his username.
+         * The event return the username in the details.
+         *
+         * There is a delay to make the UX more smooth.
+         * Default: 2000ms
+         *
+         * The delay can be modified with time-before-username-check attribute
+         *
+         * @event username-changed
+         */
+
+        properties: {
+            /**
+             * The value of the input.
+             */
+            value: {
+                type: String,
+                notify: true
+            },
+            /**
+             * Set to true to disable this input.
+             */
+            disabled: {
+                type: Boolean,
+                value: false
+            },
+            /**
+             * Set to true to mark the input as required.
+             */
+            required: {
+                type: Boolean,
+                value: false
+            },
+            /**
+             * Returns true if the value is invalid
+             */
+            invalid: {
+                type: Boolean,
+                value: false,
+                notify: true
+            },
+            /**
+             * Returns true if the value is invalid
+             */
+            minErrorMessage: {
+                type: String
+            },
+            /**
+             * Set this to specify the pattern allowed by `preventInvalidInput`.
+             */
+            allowedPattern: {
+              type: String
+            },
+            /**
+             * The minimum length of the input value.
+             */
+            minlength: {
+              type: Number
+            },
+            /**
+             * The maximum length of the input value.
+             */
+            maxlength: {
+              type: Number
+            },
+            /**
+             * The label for this input.
+             */
+            label: String,
+            /**
+             * Autofocus propertie
+             */
+            autofocus: Boolean,
+            /**
+             * The error message to display when the input is invalid.
+             */
+            errorMessage: String,
+            /**
+             * Time in milliseconds before the username-changed event is fired. Make UX more fluid.
+             */
+            timeBeforeUsernameCheck: {
+              type: Number,
+              value: 2000,
+            },
+        },
+        _usernameChanged: function() {
+          if(this.$.inputPaper.value != ''){
+            this._typing();
+            if(this.minlength && this.$.inputPaper.value.length < this.minlength) {
+              this.typingTimer = this.async(function() {
+                this.usernameInvalid(this.minErrorMessage);
+              }, this.timeBeforeUsernameCheck);
+            } else {
+              this.typingTimer = this.async(function() {
+                this.fire('usernameChanged', {username: this.$.inputPaper.value});
+              }, this.timeBeforeUsernameCheck);
+            }
+
+          } else {
+            this.cancelAsync(this.typingTimer);
+            this.$.inputPaper.invalid = false;
+            this.$.failIcon.removeAttribute('active');
+            this.$.okIcon.removeAttribute('active');
+            this.$.spinner.active = false;
+            this.$.spinner.hidden = true;
+            this.$.failIcon.hidden = true;
+            this.$.okIcon.hidden = true;
+          }
+        },
+
+        _typing: function() {
+          this.cancelAsync(this.typingTimer);
+          this.$.inputPaper.invalid = false;
+          this.$.failIcon.removeAttribute('active');
+          this.$.okIcon.removeAttribute('active');
+          this.$.spinner.active = true;
+          this.$.spinner.hidden = false;
+          this.$.failIcon.hidden = true;
+          this.$.okIcon.hidden = true;
+
+        },
+        /**
+         * Call this function after server-side check to show an error.
+         */
+        usernameInvalid: function(message) {
+          this.$.spinner.active = false;
+
+          this.async(function() {
+            this.$.spinner.hidden = true;
+            this.$.failIcon.setAttribute('active', true);
+            this.$.failIcon.hidden = false;
+            this.$.inputPaper.invalid = true;
+            this.$.inputPaper.errorMessage = message;
+          }, 300);
+        },
+        /**
+         * Call this function after server-side check to show the username is valid.
+         */
+        usernameValid: function() {
+          this.$.spinner.active = false;
+
+          this.async(function() {
+            this.$.spinner.hidden = true;
+            this.$.okIcon.setAttribute('active', true);
+            this.$.okIcon.hidden = false;
+          }, 300);
+        }
+    });
+</script>

@@ -1,0 +1,26 @@
+{
+  "name": "paper-input-username",
+  "version": "1.0.0",
+  "description": "A Material Design input for username created for instant server-side check (Polymer 1.x)",
+  "authors": [
+    "Zaccharie Jacquat"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/koada-os/paper-input-username.git"
+  },
+  "main": "paper-input-username.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0",
+    "paper-input": "^1.1.23",
+    "paper-spinner": "^1.2.1",
+    "iron-icons": "^1.2.0",
+    "iron-icon": "^1.0.12"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  }
+}
