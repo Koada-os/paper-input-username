@@ -160,6 +160,11 @@ After doing some server side check, you have to call `usernameValid()` or `usern
               type: Number,
               value: 2000,
             },
+            isTyping: {
+              type: Boolean,
+              value: false,
+              notify:true
+            },
         },
         _usernameChanged: function() {
           if(this.$.inputPaper.value != ''){
@@ -167,10 +172,12 @@ After doing some server side check, you have to call `usernameValid()` or `usern
             if(this.minlength && this.$.inputPaper.value.length < this.minlength) {
               this.typingTimer = this.async(function() {
                 this.usernameInvalid(this.minErrorMessage);
+                this.isTyping = false;
               }, this.timeBeforeUsernameCheck);
             } else {
               this.typingTimer = this.async(function() {
-                this.fire('usernameChanged', {username: this.$.inputPaper.value});
+                this.fire('username-changed', {username: this.$.inputPaper.value});
+                this.isTyping = false;
               }, this.timeBeforeUsernameCheck);
             }
 
@@ -187,6 +194,7 @@ After doing some server side check, you have to call `usernameValid()` or `usern
         },
 
         _typing: function() {
+          this.isTyping = true;
           this.cancelAsync(this.typingTimer);
           this.$.inputPaper.invalid = false;
           this.$.failIcon.removeAttribute('active');
@@ -202,12 +210,12 @@ After doing some server side check, you have to call `usernameValid()` or `usern
          */
         usernameInvalid: function(message) {
           this.$.spinner.active = false;
+          this.$.inputPaper.invalid = true;
 
           this.async(function() {
             this.$.spinner.hidden = true;
             this.$.failIcon.setAttribute('active', true);
             this.$.failIcon.hidden = false;
-            this.$.inputPaper.invalid = true;
             this.$.inputPaper.errorMessage = message;
           }, 300);
         },
@@ -222,6 +230,13 @@ After doing some server side check, you have to call `usernameValid()` or `usern
             this.$.okIcon.setAttribute('active', true);
             this.$.okIcon.hidden = false;
           }, 300);
+        },
+        validate: function() {
+          if(!this.$.inputPaper.invalid && !this.isTyping){
+            return this.$.inputPaper.validate();
+          } else {
+            return false;
+          }
         }
     });
 </script>
