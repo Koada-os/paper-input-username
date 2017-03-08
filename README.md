@@ -28,11 +28,11 @@ Example:
 var validInput = document.getElementById('validInput');
 var failInput = document.getElementById('failInput')
 var customFailInput = document.getElementById('customFailInput')
-validInput.addEventListener('usernameChanged', function(e,w) {
+validInput.addEventListener('username-changed', function(e,w) {
   console.log(e,w);
     validInput.usernameValid();
 });
-failInput.addEventListener('usernameChanged', function() {
+failInput.addEventListener('username-changed', function() {
     failInput.usernameInvalid('The username already exists');
 });
 </script>
